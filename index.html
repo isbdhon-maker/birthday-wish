@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday My Love</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --pink: #ff4081;
+            --dark-pink: #d81b60;
+            --soft-pink: #fce4ec;
+        }
+
+        * { box-sizing: border-box; }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            overflow: hidden;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .page {
+            display: none;
+            width: 100%; height: 100vh;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0; left: 0;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .active { display: flex; animation: fadeIn 0.8s forwards; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Floating Hearts Background */
+        .heart {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 20px;
+            animation: fly 10s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes fly {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Common Buttons */
+        .next-btn {
+            margin-top: 30px; padding: 15px 50px;
+            background: white; color: var(--dark-pink);
+            border: none; border-radius: 50px;
+            cursor: pointer; font-size: 1.2rem; font-weight: bold;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: 0.3s; z-index: 100;
+        }
+        .next-btn:hover { transform: scale(1.1); background: var(--pink); color: white; }
+
+        /* --- PAGE 1: Intro --- */
+        .intro-text { font-size: 4rem; color: white; text-shadow: 2px 4px 10px rgba(0,0,0,0.3); font-weight: 900; }
+
+        /* --- PAGE 2: Calendar --- */
+        .calendar-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px; border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            width: 320px; border: 4px solid var(--pink);
+        }
+        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 15px; }
+        .day-n { font-weight: bold; color: #777; font-size: 0.8rem; }
+        .days-grid div { height: 35px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .special-day { color: white; position: relative; z-index: 1; }
+        .special-day::before {
+            content: '❤'; position: absolute; font-size: 2.8rem; color: var(--pink); z-index: -1;
+            animation: pulse 1.2s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+        /* --- PAGE 4: Wish & Photo --- */
+        .wish-container {
+            display: flex; flex-direction: row; gap: 30px; align-items: center;
+            background: rgba(255, 255, 255, 0.9); padding: 30px; border-radius: 30px;
+            max-width: 900px; width: 95%; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .wish-text { flex: 1; text-align: left; color: #333; line-height: 1.6; border-right: 2px dashed var(--pink); padding-right: 20px; }
+        .wish-photo-frame {
+            flex: 1; padding: 10px; background: white; border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 5px solid white;
+        }
+        .wish-photo-frame img { width: 100%; height: 400px; object-fit: cover; border-radius: 15px; display: block; }
+
+        /* --- PAGE 6: Slideshow --- */
+        .slideshow-frame { width: 340px; height: 460px; border: 10px solid white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .mySlides { width: 100%; height: 100%; object-fit: cover; display: none; }
+    </style>
+</head>
+<body>
+
+    <script>
+        for (let i = 0; i < 20; i++) {
+            let heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDelay = Math.random() * 10 + 's';
+            heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            document.body.appendChild(heart);
+        }
+    </script>
+
+    <div id="page1" class="page active">
+        <h1 class="intro-text">Wish you a Happy Birthday My Love</h1>
+        <button class="next-btn" onclick="showP(2)">Start the Journey ✨</button>
+    </div>
+
+    <div id="page2" class="page">
+        <h2 style="color: white; font-size: 2.5rem; text-shadow: 2px 2px 5px rgba(0,0,0,0.2);">Save the Date</h2>
+        <div class="calendar-box">
+            <h3 style="margin:0; color:var(--dark-pink);">APRIL 2026</h3>
+            <div class="days-grid">
+                <div class="day-n">S</div><div class="day-n">M</div><div class="day-n">T</div><div class="day-n">W</div><div class="day-n">T</div><div class="day-n">F</div><div class="day-n">S</div>
+                <div></div><div></div><div></div><div>1</div><div>2</div><div>3</div><div>4</div>
+                <div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div><div>11</div>
+                <div>12</div><div>13</div><div>14</div><div>15</div><div>16</div><div>17</div><div>18</div>
+                <div>19</div><div>20</div><div>21</div><div>22</div><div>23</div><div>24</div><div>25</div>
+                <div>26</div><div class="special-day">27</div><div>28</div><div>29</div><div>30</div>
+            </div>
+        </div>
+        <button class="next-btn" onclick="showP(3)">Next</button>
+    </div>
+
+    <div id="page3" class="page">
+        <audio id="music3"><source src="birthday-song.mp3" type="audio/mpeg"></audio>
+        <div onclick="hitCake()" style="cursor: pointer;">
+            <img src="cake.png" style="width: 250px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));">
+            <h2 id="cake-msg" style="display:none; color:white; font-size: 3rem; margin-top:20px;">Welcome to 22nd</h2>
+            <p id="hint3" style="color:white; font-weight:bold; animation: pulse 1s infinite;">Click the Cake! 🎂</p>
+        </div>
+        <button class="next-btn" id="btn3" style="display:none;" onclick="showP(4)">Next</button>
+    </div>
+
+    <div id="page4" class="page">
+        <div class="wish-container">
+            <div class="wish-text">
+                <h2 style="color: var(--dark-pink); margin-top:0;">Happy Birthday, My Punchi Mala 🌸</h2>
+                <p>On your special day, I just want you to know how truly special you are to me. You fill my life with happiness, love, and beautiful moments I’ll always cherish.</p>
+                <p>I wish you a future full of success, peace, and endless happiness. May all your dreams come true.</p>
+                <p style="font-weight:bold; color:var(--dark-pink);">I love you so much. 🌹 ❤️</p>
+            </div>
+            <div class="wish-photo-frame">
+                <img src="my-love.jpg" alt="My Love">
+            </div>
+        </div>
+        <button class="next-btn" onclick="showP(5)">Next</button>
+    </div>
+
+    <div id="page5" class="page">
+        <div id="gift" onclick="playVid()" style="background:white; padding:40px; border-radius:30px; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+            <div style="font-size:5rem;">🎁</div>
+            <h2 style="color:var(--dark-pink);">Surprise for You</h2>
+            <p>Click to open</p>
+        </div>
+        <div id="vid-box" style="display:none; width:90%; max-width:600px; border:10px solid white; border-radius:20px;">
+            <video id="v" style="width:100%;"><source src="surprise-video.mp4" type="video/mp4"></video>
+        </div>
+        <button class="next-btn" id="btn5" style="display:none;" onclick="showP(6)">Next</button>
+    </div>
+
+    <div id="page6" class="page">
+        <audio id="f-music"><source src="final-song.mp3" type="audio/mpeg"></audio>
+        <div id="slides-container" class="slideshow-frame">
+            <img class="mySlides" src="1757830238535.jpg">
+            <img class="mySlides" src="1762322355498.jpg">
+            <img class="mySlides" src="1762677192167.jpg">
+            <img class="mySlides" src="1762677192464.jpg">
+            <img class="mySlides" src="c9caa9ba9ebd12b41492f733abdb4c41.jpg">
+            <img class="mySlides" src="IMG-20241106-WA0077.jpg">
+            <img class="mySlides" src="IMG-20250226-WA0003.jpg">
+            <img class="mySlides" src="IMG-20250320-WA0010.jpg">
+            <img class="mySlides" src="IMG-20250529-WA0014.jpg">
+            <img class="mySlides" src="IMG-20250611-WA0028.jpg">
+            <img class="mySlides" src="IMG-20250627-WA0035.jpg">
+            <img class="mySlides" src="IMG-20250806-WA0002.jpg">
+            <img class="mySlides" src="IMG-20250902-WA0007.jpg">
+            <img class="mySlides" src="IMG-20250902-WA0006.jpg">
+            <img class="mySlides" src="IMG-20250911-WA0010.jpg">
+            <img class="mySlides" src="IMG-20251005-WA0200.jpg">
+            <img class="mySlides" src="IMG-20250914-WA0017.jpg">
+            <img class="mySlides" src="IMG-20251009-WA0009.jpg">
+            <img class="mySlides" src="IMG-20251026-WA0014.jpg">
+            <img class="mySlides" src="IMG-20251018-WA0008.jpg">
+            <img class="mySlides" src="IMG-20260101-WA0006.jpg">
+            <img class="mySlides" src="IMG-20260120-WA0054.jpg">
+            <img class="mySlides" src="IMG-20260127-WA0022.jpg">
+        </div>
+        <div id="final-box" style="display:none; background:white; padding:30px; border-radius:30px; width:350px;">
+            <img src="our-photo.jpg" style="width:100%; border-radius:15px;">
+            <h3 style="color:var(--dark-pink); margin-top:20px;">Happy Birthday my little flower & i love you.. ❤️🌹</h3>
+        </div>
+    </div>
+
+    <script>
+        function showP(n) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page' + n).classList.add('active');
+            if(n === 6) startMagic();
+        }
+
+        function hitCake() {
+            const m = document.getElementById('music3');
+            m.play();
+            document.getElementById('cake-msg').style.display = 'block';
+            document.getElementById('hint3').style.display = 'none';
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            m.onended = () => document.getElementById('btn3').style.display = 'inline-block';
+        }
+
+        function playVid() {
+            document.getElementById('gift').style.display = 'none';
+            document.getElementById('vid-box').style.display = 'block';
+            const v = document.getElementById('v');
+            v.play();
+            v.onended = () => document.getElementById('btn5').style.display = 'inline-block';
+        }
+
+        let sI = 0;
+        function startMagic() {
+            const m = document.getElementById('f-music');
+            m.play();
+            runS();
+            m.onended = () => {
+                document.getElementById('slides-container').style.display = 'none';
+                document.getElementById('final-box').style.display = 'block';
+                confetti({ particleCount: 200, spread: 100 });
+            };
+        }
+
+        function runS() {
+            let s = document.getElementsByClassName("mySlides");
+            for (let i = 0; i < s.length; i++) s[i].style.display = "none";
+            sI++; if (sI > s.length) sI = 1;
+            s[sI-1].style.display = "block";
+            if (!document.getElementById('f-music').ended) setTimeout(runS, 2500);
+        }
+    </script>
+</body>
+</html>
