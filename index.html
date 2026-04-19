@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday My Love</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --pink: #ff4081;
+            --dark-pink: #d81b60;
+            --soft-blue: #e0f7fa;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100vh;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            overflow: hidden;
+            background-color: var(--soft-blue);
+        }
+
+        .page {
+            display: none;
+            width: 100%; height: 100vh;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            text-align: center;
+        }
+
+        .active { display: flex; }
+
+        /* Animations */
+        @keyframes drift { from { transform: translateX(-150px); } to { transform: translateX(100vw); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Background Clouds */
+        .cloud-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .cloud { position: absolute; fill: white; opacity: 0.7; animation: drift linear infinite; }
+
+        /* Button Style */
+        .next-btn {
+            margin-top: 30px; padding: 12px 45px;
+            background: var(--pink); color: white;
+            border: none; border-radius: 30px;
+            cursor: pointer; font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: 0.3s; z-index: 100;
+        }
+        .next-btn:hover { transform: scale(1.1); background: var(--dark-pink); }
+
+        /* PAGE 2 Calendar CSS */
+        .calendar-container {
+            background: white; padding: 25px;
+            border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 90%; max-width: 320px;
+            border: 5px solid #fff; animation: fadeInUp 1s ease-out;
+        }
+        .calendar-header { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #fce4ec; padding-bottom: 8px; }
+        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; }
+        .day-name { font-weight: 900; color: #888; font-size: 0.8rem; }
+        .days-grid div { height: 35px; display: flex; justify-content: center; align-items: center; font-size: 1rem; color: #444; }
+        .special-day { color: white !important; position: relative; z-index: 1; font-weight: bold; }
+        .special-day::before {
+            content: '❤'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 2.5rem; color: var(--pink); z-index: -1; animation: pulse 1.5s infinite;
+        }
+
+        /* PAGE 4 Wish Frame CSS */
+        .wish-frame {
+            background: #fff; padding: 25px; width: 50%; border-radius: 20px;
+            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 2px solid #f48fb1; text-align: center;
+        }
+        .wish-frame::after {
+            content: ''; position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px;
+            border: 1px dashed #f48fb1; border-radius: 15px; pointer-events: none;
+        }
+        .profile-frame { padding: 12px; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; }
+        .profile-frame::before { content: '🎀'; position: absolute; top: -30px; left: 50%; transform: translateX(-50%); font-size: 3rem; z-index: 10; }
+        .profile-pic { width: 260px; height: 360px; object-fit: cover; border-radius: 10px; }
+        .floating-deco { position: absolute; animation: float 4s infinite ease-in-out; opacity: 0.4; font-size: 2.5rem; z-index: -1; }
+    </style>
+</head>
+<body>
+
+    <div class="cloud-bg">
+        <svg class="cloud" style="top: 10%; width: 160px; animation-duration: 20s;" viewBox="0 0 24 24"><path d="M17.5,19c-3.037,0-5.5-2.463-5.5-5.5c0-0.007,0-0.013,0-0.02c-0.165,0.013-0.331,0.02-0.5,0.02c-2.485,0-4.5-2.015-4.5-4.5s2.015-4.5,4.5-4.5c0.169,0,0.335,0.007,0.5,0.02C12,4.463,14.463,2,17.5,2c3.037,0,5.5,2.463,5.5,5.5c0,0.169-0.007,0.335-0.02,0.5C23.487,8.165,23.5,8.331,23.5,8.5c0,2.485-2.015,4.5-4.5,4.5c-0.169,0-0.335-0.007-0.5-0.02C18,16.537,15.537,19,17.5,19z" /></svg>
+    </div>
+
+    <div id="page1" class="page active">
+        <h1 style="font-size: 3rem; color: var(--dark-pink); animation: pulse 2s infinite;">Happy Birthday My Love</h1>
+        <button class="next-btn" onclick="goToPage(2)">Next</button>
+    </div>
+
+    <div id="page2" class="page">
+        <h2 style="color: var(--pink); font-size: 2rem; margin-bottom: 20px;">A Special Day is Coming...</h2>
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <span style="color: #d81b60; font-size: 1.4rem; font-weight: bold;">APRIL 2026</span>
+            </div>
+            <div class="days-grid">
+                <div class="day-name">S</div><div class="day-name">M</div><div class="day-name">T</div><div class="day-name">W</div><div class="day-name">T</div><div class="day-name">F</div><div class="day-name">S</div>
+                <div></div><div></div><div></div><div>1</div><div>2</div><div>3</div><div>4</div>
+                <div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div><div>11</div>
+                <div>12</div><div>13</div><div>14</div><div>15</div><div>16</div><div>17</div><div>18</div>
+                <div>19</div><div>20</div><div>21</div><div>22</div><div>23</div><div>24</div><div>25</div>
+                <div>26</div><div class="special-day">27</div><div>28</div><div>29</div><div>30</div>
+            </div>
+        </div>
+        <button class="next-btn" onclick="goToPage(3)">Next</button>
+    </div>
+
+    <div id="page3" class="page" style="background-color: #fce4ec;">
+        <audio id="audio-p3"><source src="birthday-song.mp3" type="audio/mpeg"></audio>
+        <div onclick="clickCake()" style="cursor: pointer;">
+            <img src="cake.png" id="cake-img" style="width: 260px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));">
+            <p id="cake-hint" style="color: var(--pink); font-weight: bold; animation: pulse 1s infinite;">Click the Cake! 🎂</p>
+            <h2 id="welcome-msg" style="display:none; color: var(--dark-pink); font-size: 2.5rem;">Welcome to 22nd</h2>
+        </div>
+        <button class="next-btn" id="next-p3" style="display:none;" onclick="goToPage(4)">Next</button>
+    </div>
+
+    <div id="page4" class="page" style="background-color: #fff5f8;">
+        <div class="floating-deco" style="top:10%; left:10%;">🧸</div>
+        <div class="floating-deco" style="bottom:10%; right:10%;">🎂</div>
+        <h2 style="font-size:2.5rem; color:var(--dark-pink); margin-bottom: 20px;">𝐁𝐢𝐫𝐭𝐡𝐝𝐚𝐲 𝐖𝐢𝐬𝐡</h2>
+        <div style="display:flex; width:90%; justify-content:center; align-items:center; gap:30px;">
+            <div class="wish-frame">
+                <h3 style="color: var(--dark-pink); margin-top: 0;">Happy Birthday, My Punchi Mala 🌸</h3>
+                <p style="line-height: 1.5; color: #444;">On your special day, I just want you to know how truly special you are to me. You fill my life with happiness and love.</p>
+                <p style="line-height: 1.5; color: #444;">May all your dreams come true, and may life always treat you kindly. You will always have a special place in my heart. ❤️</p>
+                <p style="font-style: italic; font-weight: bold; color: var(--dark-pink);">I love you so much. 🌹</p>
+            </div>
+            <div class="profile-frame"><img src="my-love.jpg" class="profile-pic"></div>
+        </div>
+        <button class="next-btn" onclick="goToPage(5)">Next</button>
+    </div>
+
+    <div id="page5" class="page" style="border:12px solid var(--pink); box-sizing: border-box;">
+        <div id="gift-box" onclick="startVideo()" style="background:white; padding:40px; border-radius:20px; cursor:pointer; box-shadow:0 10px 20px rgba(0,0,0,0.1);">
+            <div style="font-size:4rem;">🎁</div>
+            <h3 style="color: var(--dark-pink);">Surprise Gift</h3>
+            <p>Click to Open</p>
+        </div>
+        <div id="vid-container" style="display:none; width: 80%; max-width: 700px; border: 8px solid white; border-radius: 15px; overflow: hidden;">
+            <video id="surprise-vid" style="width:100%;"><source src="surprise-video.mp4" type="video/mp4"></video>
+        </div>
+        <button class="next-btn" id="next-p5" style="display:none;" onclick="goToPage(6)">Next</button>
+    </div>
+
+    <div id="page6" class="page">
+        <audio id="audio-final"><source src="final-song.mp3" type="audio/mpeg"></audio>
+        <div id="slideshow-area" style="width: 320px; height: 440px; border: 10px solid white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <img class="mySlides" src="1757830238535.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="1762322355498.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="1762677192167.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="1762677192464.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="c9caa9ba9ebd12b41492f733abdb4c41.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20241106-WA0077.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20250226-WA0003.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20250320-WA0010.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20250529-WA0014.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20250611-WA0028.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20250627-WA0035.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20250806-WA0002.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20250902-WA0007.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20250902-WA0006.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20250911-WA0010.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20251005-WA0200.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20250914-WA0017.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20251009-WA0009.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20251026-WA0014.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20251018-WA0008.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20260101-WA0006.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20260120-WA0054.jpg" style="width:100%; height:100%; object-fit:cover;">
+            <img class="mySlides" src="IMG-20260127-WA0022.jpg" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <div id="final-popup" style="display:none; background:white; padding:20px; border-radius:20px; width:300px; box-shadow:0 0 30px rgba(0,0,0,0.3);">
+            <img src="our-photo.jpg" style="width:100%; border-radius:10px;">
+            <h3 style="color: var(--dark-pink); margin-top:15px;">Happy Birthday my little flower & i love you.. ❤️🌹</h3>
+        </div>
+    </div>
+
+    <script>
+        function goToPage(n) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page' + n).classList.add('active');
+            if(n === 6) startFinal();
+        }
+
+        function clickCake() {
+            const a = document.getElementById('audio-p3');
+            a.play();
+            document.getElementById('welcome-msg').style.display = 'block';
+            document.getElementById('cake-hint').style.display = 'none';
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            a.onended = () => document.getElementById('next-p3').style.display = 'inline-block';
+        }
+
+        function startVideo() {
+            document.getElementById('gift-box').style.display = 'none';
+            document.getElementById('vid-container').style.display = 'block';
+            const v = document.getElementById('surprise-vid');
+            v.play();
+            v.onended = () => document.getElementById('next-p5').style.display = 'inline-block';
+        }
+
+        let sIdx = 0;
+        function startFinal() {
+            const m = document.getElementById('audio-final');
+            m.play();
+            showS();
+            m.onended = () => {
+                document.getElementById('slideshow-area').style.display = 'none';
+                document.getElementById('final-popup').style.display = 'block';
+                confetti({ particleCount: 200, spread: 90 });
+            };
+        }
+
+        function showS() {
+            let s = document.getElementsByClassName("mySlides");
+            for (let i = 0; i < s.length; i++) s[i].style.display = "none";
+            sIdx++;
+            if (sIdx > s.length) sIdx = 1;
+            s[sIdx-1].style.display = "block";
+            if (!document.getElementById('audio-final').ended) setTimeout(showS, 2500);
+        }
+    </script>
+</body>
+</html>
