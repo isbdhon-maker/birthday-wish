@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday My Love</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --pink: #ff4081;
+            --dark-pink: #d81b60;
+            --soft-blue: #e0f7fa;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            overflow: hidden;
+            background-color: var(--soft-blue);
+        }
+
+        /* Page Transitions */
+        .page {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            text-align: center;
+        }
+
+        .active { display: flex; }
+
+        /* background clouds */
+        .cloud-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .cloud {
+            position: absolute;
+            fill: white;
+            opacity: 0.7;
+            animation: drift linear infinite;
+        }
+
+        /* Common Button Style */
+        .next-btn {
+            margin-top: 30px;
+            padding: 12px 40px;
+            background: var(--pink);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: 0.3s;
+            z-index: 100;
+        }
+        .next-btn:hover { transform: scale(1.1); background: var(--dark-pink); }
+
+        /* PAGE 1 Styling */
+        .msg-p1 { font-size: 3.5rem; color: var(--dark-pink); animation: pulse 2s infinite; padding: 20px; }
+
+        /* PAGE 2 Styling */
+        .content-p2 { display: flex; justify-content: space-around; align-items: center; width: 85%; }
+        .text-side { font-size: 4rem; font-weight: 900; color: var(--pink); text-align: left; line-height: 1.1; }
+        .calendar { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 280px; }
+        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 10px; }
+        .special-day { color: white; position: relative; z-index: 1; }
+        .special-day::before { content: '❤'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2.2rem; color: var(--pink); z-index: -1; }
+
+        /* PAGE 3 Styling */
+        .cake-img { width: 260px; cursor: pointer; transition: 0.3s; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2)); }
+        #welcome-msg { font-size: 2.5rem; color: var(--pink); font-weight: bold; display: none; margin-top: 20px; }
+
+        /* PAGE 4 Styling */
+        .wish-container { width: 55%; background: rgba(255, 255, 255, 0.9); padding: 25px; border-radius: 20px; border: 2px dashed var(--pink); text-align: left; min-height: 350px; }
+        .profile-frame { padding: 15px; background: white; border: 8px solid var(--pink); border-radius: 20px; position: relative; }
+        .profile-frame::before { content: '🎀'; position: absolute; top: -35px; left: 50%; transform: translateX(-50%); font-size: 3rem; }
+        .profile-pic { width: 280px; height: 380px; object-fit: cover; border-radius: 10px; }
+        .floating-deco { position: absolute; opacity: 0.3; font-size: 2.5rem; z-index: -1; animation: float 4s infinite ease-in-out; }
+
+        /* PAGE 5 Styling */
+        #video-container { display: none; width: 85%; max-width: 750px; border: 10px solid white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        video { width: 100%; display: block; }
+        .gift-box { background: white; padding: 40px; border-radius: 25px; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+
+        /* FINAL PAGE Styling */
+        .slideshow-box { width: 340px; height: 460px; border: 10px solid white; border-radius: 20px; overflow: hidden; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
+        .mySlides { width: 100%; height: 100%; object-fit: cover; display: none; }
+        #final-popup { display: none; background: white; padding: 25px; border-radius: 25px; box-shadow: 0 0 50px rgba(0,0,0,0.3); width: 320px; z-index: 200; }
+
+        /* Animations */
+        @keyframes drift { from { transform: translateX(-150px); } to { transform: translateX(100vw); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+    </style>
+</head>
+<body>
+
+    <div class="cloud-bg">
+        <svg class="cloud" style="top: 10%; width: 180px; animation-duration: 25s;" viewBox="0 0 24 24"><path d="M17.5,19c-3.037,0-5.5-2.463-5.5-5.5c0-0.007,0-0.013,0-0.02c-0.165,0.013-0.331,0.02-0.5,0.02c-2.485,0-4.5-2.015-4.5-4.5s2.015-4.5,4.5-4.5c0.169,0,0.335,0.007,0.5,0.02C12,4.463,14.463,2,17.5,2c3.037,0,5.5,2.463,5.5,5.5c0,0.169-0.007,0.335-0.02,0.5C23.487,8.165,23.5,8.331,23.5,8.5c0,2.485-2.015,4.5-4.5,4.5c-0.169,0-0.335-0.007-0.5-0.02C18,16.537,15.537,19,17.5,19z" /></svg>
+        <svg class="cloud" style="top: 55%; width: 220px; animation-duration: 35s;" viewBox="0 0 24 24"><path d="M17.5,19c-3.037,0-5.5-2.463-5.5-5.5c0-0.007,0-0.013,0-0.02c-0.165,0.013-0.331,0.02-0.5,0.02c-2.485,0-4.5-2.015-4.5-4.5s2.015-4.5,4.5-4.5c0.169,0,0.335,0.007,0.5,0.02C12,4.463,14.463,2,17.5,2c3.037,0,5.5,2.463,5.5,5.5c0,0.169-0.007,0.335-0.02,0.5C23.487,8.165,23.5,8.331,23.5,8.5c0,2.485-2.015,4.5-4.5,4.5c-0.169,0-0.335-0.007-0.5-0.02C18,16.537,15.537,19,17.5,19z" /></svg>
+    </div>
+
+    <div id="page1" class="page active">
+        <h1 class="msg-p1">Wish you a Happy Birthday My Love</h1>
+        <button class="next-btn" onclick="goToPage(2)">Next</button>
+    </div>
+
+    <div id="page2" class="page">
+        <div class="content-p2">
+            <div class="text-side">It's<br>Your<br>Birthday</div>
+            <div class="calendar">
+                <div style="font-weight:bold; font-size:1.4rem;">APRIL</div>
+                <div class="days-grid">
+                    <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+                    <div></div><div></div><div></div><div>1</div><div>2</div><div>3</div><div>4</div>
+                    <div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div><div>11</div>
+                    <div>12</div><div>13</div><div>14</div><div>15</div><div>16</div><div>17</div><div>18</div>
+                    <div>19</div><div>20</div><div>21</div><div>22</div><div>23</div><div>24</div><div>25</div>
+                    <div>26</div><div class="special-day">27</div><div>28</div><div>29</div><div>30</div>
+                </div>
+            </div>
+        </div>
+        <button class="next-btn" onclick="goToPage(3)">Next</button>
+    </div>
+
+    <div id="page3" class="page" style="background-color: #fce4ec;">
+        <audio id="audio-p3"><source src="birthday-song.mp3" type="audio/mpeg"></audio>
+        <div onclick="clickCake()">
+            <img src="cake.png" class="cake-img" id="cake-p3">
+            <p id="cake-hint" style="font-weight:bold; color:var(--pink); animation: blink 1s infinite;">Click the Cake!</p>
+            <div id="welcome-msg">Welcome to 22nd</div>
+        </div>
+        <button class="next-btn" id="next-p3" style="display:none;" onclick="goToPage(4)">Next</button>
+    </div>
+
+    <div id="page4" class="page" style="background-color: #fff5f8;">
+        <div class="floating-deco" style="top:15%; left:8%;">🧸</div>
+        <div class="floating-deco" style="bottom:15%; right:8%;">🎂</div>
+        <div class="floating-deco" style="top:40%; left:5%;">🌸</div>
+        
+        <h2 style="font-size:3rem; color:var(--dark-pink); margin-top:0;">𝐁𝐢𝐫𝐭𝐡𝐝𝐚𝐲 𝐖𝐢𝐬𝐡</h2>
+        <div style="display:flex; width:90%; justify-content:space-around; align-items:center; gap:20px;">
+            <div class="wish-container"><div id="typing-box" style="font-size:1.2rem; line-height:1.6; color:#444;"></div></div>
+            <div class="profile-frame"><img src="my-love.jpg" class="profile-pic"></div>
+        </div>
+        <button class="next-btn" id="next-p4" style="display:none;" onclick="goToPage(5)">Next</button>
+    </div>
+
+    <div id="page5" class="page" style="border:15px solid var(--pink); box-sizing:border-box;">
+        <div id="gift-popup" class="gift-box" onclick="startSurprise()">
+            <div style="font-size:5rem;">🎁</div>
+            <div style="font-size:2rem; font-weight:bold; color:var(--dark-pink);">Surprise Gift</div>
+            <p>Click to Open</p>
+        </div>
+        <div id="video-container">
+            <video id="surprise-vid"><source src="surprise-video.mp4" type="video/mp4"></video>
+        </div>
+        <button class="next-btn" id="next-p5" style="display:none;" onclick="goToPage(6)">Next</button>
+    </div>
+
+    <div id="page6" class="page">
+        <audio id="audio-final"><source src="final-song.mp3" type="audio/mpeg"></audio>
+        <div class="slideshow-box" id="slideshow-container">
+            <img class="mySlides" src="1757830238535.jpg">
+            <img class="mySlides" src="1762322355498.jpg">
+            <img class="mySlides" src="1762677192167.jpg">
+            <img class="mySlides" src="1762677192464.jpg">
+            <img class="mySlides" src="c9caa9ba9ebd12b41492f733abdb4c41.jpg">
+            <img class="mySlides" src="IMG-20241106-WA0077.jpg">
+            <img class="mySlides" src="IMG-20250226-WA0003.jpg">
+            <img class="mySlides" src="IMG-20250320-WA0010.jpg">
+            <img class="mySlides" src="IMG-20250529-WA0014.jpg">
+            <img class="mySlides" src="IMG-20250611-WA0028.jpg">
+            <img class="mySlides" src="IMG-20250627-WA0035.jpg">
+            <img class="mySlides" src="IMG-20250806-WA0002.jpg">
+            <img class="mySlides" src="IMG-20250902-WA0007.jpg">
+            <img class="mySlides" src="IMG-20250902-WA0006.jpg">
+            <img class="mySlides" src="IMG-20250911-WA0010.jpg">
+            <img class="mySlides" src="IMG-20251005-WA0200.jpg">
+            <img class="mySlides" src="IMG-20250914-WA0017.jpg">
+            <img class="mySlides" src="IMG-20251009-WA0009.jpg">
+            <img class="mySlides" src="IMG-20251026-WA0014.jpg">
+            <img class="mySlides" src="IMG-20251018-WA0008.jpg">
+            <img class="mySlides" src="IMG-20260101-WA0006.jpg">
+            <img class="mySlides" src="IMG-20260120-WA0054.jpg">
+            <img class="mySlides" src="IMG-20260127-WA0022.jpg">
+        </div>
+        <div id="final-popup">
+            <img src="our-photo.jpg" style="width:100%; height:auto; border-radius:15px; object-fit:cover;">
+            <div style="color:var(--dark-pink); font-weight:bold; margin-top:15px; font-size:1.2rem;">Happy Birthday my little flower & i love you.. ❤️🌹</div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation Logic
+        function goToPage(num) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page' + num).classList.add('active');
+            
+            if(num === 4) startTypingWish();
+            if(num === 6) startFinalMagic();
+        }
+
+        // Page 3 Logic
+        function clickCake() {
+            const audio = document.getElementById('audio-p3');
+            audio.play();
+            document.getElementById('welcome-msg').style.display = 'block';
+            document.getElementById('cake-hint').style.display = 'none';
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            
+            audio.onended = () => document.getElementById('next-p3').style.display = 'block';
+        }
+
+        // Page 4 Logic
+        function startTypingWish() {
+            const text = `🎂 Happy Birthday, My Punchi Mala 🌸\n\nOn your special day, I just want you to know how truly special you are to me. You fill my life with happiness, love, and beautiful moments I’ll always cherish.\n\nPlease take good care of yourself, stay safe, and never lose that lovely smile of yours. 💫\n\nI wish you a future full of success, peace, and endless happiness. May all your dreams come true, and may life always treat you kindly.\n\nNo matter where life takes us, you will always have a special place in my heart. ❤️\n\nHappy Birthday once again, my Punchi Mala. I love you so much. 🌹`;
+            let i = 0;
+            const target = document.getElementById('typing-box');
+            target.innerHTML = "";
+            function type() {
+                if (i < text.length) {
+                    target.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, 50);
+                } else {
+                    setTimeout(() => document.getElementById('next-p4').style.display = 'block', 5000);
+                }
+            }
+            type();
+        }
+
+        // Page 5 Logic
+        function startSurprise() {
+            document.getElementById('gift-popup').style.display = 'none';
+            const vidBox = document.getElementById('video-container');
+            const vid = document.getElementById('surprise-vid');
+            vidBox.style.display = 'block';
+            vid.play();
+            vid.onended = () => document.getElementById('next-p5').style.display = 'block';
+        }
+
+        // Final Page Logic
+        let slideIndex = 0;
+        function startFinalMagic() {
+            const song = document.getElementById('audio-final');
+            song.play();
+            animateSlides();
+            song.onended = () => {
+                document.getElementById('slideshow-container').style.display = 'none';
+                document.getElementById('final-popup').style.display = 'block';
+                confetti({ particleCount: 200, spread: 100, origin: { y: 0.7 } });
+            };
+        }
+
+        function animateSlides() {
+            let slides = document.getElementsByClassName("mySlides");
+            for (let i = 0; i < slides.length; i++) slides[i].style.display = "none";
+            slideIndex++;
+            if (slideIndex > slides.length) slideIndex = 1;
+            slides[slideIndex-1].style.display = "block";
+            if (!document.getElementById('audio-final').ended) setTimeout(animateSlides, 2500);
+        }
+    </script>
+</body>
+</html>
